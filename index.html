@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>LeadPilot — Student Enquiry Desk</title>
+<style>
+:root{--navy:#102a43;--blue:#2463eb;--ink:#172b4d;--muted:#667085;--line:#e5eaf1;--bg:#f5f7fb;--white:#fff;--green:#087f5b;--amber:#a15c00;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--navy);color:#fff;padding:20px max(16px,calc((100vw - 1100px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-size:22px;font-weight:800;letter-spacing:-.5px}.tagline{color:#d6e2f0;font-size:13px;margin-top:3px}
+main{max-width:1100px;margin:auto;padding:20px 16px 44px}.notice{border:1px solid #f3d18a;background:#fff9e8;padding:11px 13px;border-radius:12px;font-size:13px;margin-bottom:16px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:10px 13px;font-weight:650;cursor:pointer}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.dark{background:#183b56;color:#fff;border-color:#183b56}.btn:focus,input:focus,select:focus,textarea:focus{outline:3px solid #c6d7ff;outline-offset:1px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px}.metric{font-size:26px;font-weight:800;margin-top:6px}.muted{color:var(--muted);font-size:13px}.section{margin-top:22px}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}.section h2{font-size:18px;margin:0}.filters{display:flex;gap:8px;flex-wrap:wrap}.filters input,.filters select,.field input,.field select,.field textarea{width:100%;border:1px solid #d7deea;border-radius:9px;padding:10px;background:#fff;color:var(--ink);font:inherit}.filters input{min-width:190px}.tablewrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px}table{border-collapse:collapse;width:100%;min-width:760px}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:#fafbfe}tbody tr:last-child td{border-bottom:0}.pill{display:inline-block;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:700;background:#eef2f7}.pill.overdue{background:#fff0ed;color:var(--red)}.pill.today{background:#fff4d6;color:var(--amber)}.pill.upcoming{background:#e5f7ee;color:var(--green)}.pill.closed{background:#eef2f7;color:#475467}.actions{display:flex;gap:6px}.small{padding:6px 8px;font-size:12px}.empty{text-align:center;padding:28px;color:var(--muted)}
+.features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.feature{padding:14px;background:#fff;border:1px solid var(--line);border-radius:12px}.feature strong{display:block;margin-bottom:4px}.footer{margin-top:18px;color:var(--muted);font-size:12px}
+dialog{border:0;border-radius:18px;padding:0;width:min(560px,calc(100% - 24px));box-shadow:0 24px 80px #0b1f3333}dialog::backdrop{background:#0b1f3380}.modalhead{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modalbody{padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:650}.field.full{grid-column:1/-1}.modalfoot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+@media(max-width:760px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.features{grid-template-columns:1fr}.modalbody{grid-template-columns:1fr}.field.full{grid-column:auto}main{padding-top:14px}.metric{font-size:23px}}
+</style>
+</head>
+<body>
+<header>
+ <div><div class="brand">◈ LeadPilot</div><div class="tagline">Student Enquiry Desk · Less chasing, clearer next steps.</div></div>
+ <button class="btn" id="resetDemo">Reset demo data</button>
+</header>
+<main>
+ <div class="notice"><strong>Interactive demo:</strong> this app starts with fictional students. Data you add stays in this browser on this device. Do not enter real student details into this demo until you have agreed on privacy, access and data handling with the consultancy.</div>
+ <div class="toolbar">
+  <button class="btn primary" id="addBtn">＋ Add enquiry</button>
+  <button class="btn" id="exportBtn">Export CSV</button>
+  <button class="btn" id="todayBtn">Show due today</button>
+  <button class="btn" id="allBtn">Show all</button>
+ </div>
+ <section class="cards" id="metrics"></section>
+ <section class="section">
+  <div class="sectionhead"><h2>Enquiry pipeline</h2><div class="filters">
+   <input id="search" placeholder="Search name, course, next action…" aria-label="Search enquiries">
+   <select id="stageFilter" aria-label="Filter by stage"><option value="">All stages</option><option>New</option><option>Contacted</option><option>Follow-up</option><option>Counselling Booked</option><option>Application Started</option><option>Converted</option><option>Unresponsive</option><option>Lost</option></select>
+  </div></div>
+  <div class="tablewrap"><table><thead><tr><th>Student / Interest</th><th>Stage</th><th>Next follow-up</th><th>Next action</th><th>Follow-up status</th><th>Actions</th></tr></thead><tbody id="rows"></tbody></table><div class="empty" id="empty" hidden>No enquiries match. Add one or clear your filters.</div></div>
+ </section>
+ <section class="section">
+  <div class="sectionhead"><h2>Designed for a counsellor's daily routine</h2></div>
+  <div class="features">
+   <div class="feature"><strong>01 · See what needs attention</strong><span class="muted">Due-today and overdue follow-ups are highlighted.</span></div>
+   <div class="feature"><strong>02 · Know the next action</strong><span class="muted">Keep a practical next step beside every active enquiry.</span></div>
+   <div class="feature"><strong>03 · Take your data with you</strong><span class="muted">Export records to CSV for review. No account required in this demo.</span></div>
+  </div>
+ </section>
+ <div class="footer">Prototype v0.1 · Local browser demo, not a cloud CRM. No automatic WhatsApp sending, shared team access, or cross-device sync yet. Metrics are operational counts, not proof of increased conversions.</div>
+</main>
+<dialog id="leadDialog">
+ <form id="leadForm">
+  <div class="modalhead"><strong id="modalTitle">Add enquiry</strong><button class="btn small" type="button" id="closeModal">Close</button></div>
+  <div class="modalbody">
+   <input type="hidden" id="leadId">
+   <label class="field">Student label / name<input id="name" required placeholder="e.g. Demo Student F"></label>
+   <label class="field">Course / interest<input id="course" placeholder="e.g. UK Master's"></label>
+   <label class="field">Lead source<select id="source"><option>Website</option><option>Instagram</option><option>WhatsApp</option><option>Walk-in</option><option>Referral</option><option>Phone</option><option>Other</option></select></label>
+   <label class="field">Stage<select id="stage"><option>New</option><option>Contacted</option><option>Follow-up</option><option>Counselling Booked</option><option>Application Started</option><option>Converted</option><option>Unresponsive</option><option>Lost</option></select></label>
+   <label class="field">Next follow-up date<input type="date" id="nextDate"></label>
+   <label class="field">Counsellor<input id="owner" placeholder="e.g. Counsellor 1"></label>
+   <label class="field full">Next action<textarea id="nextAction" rows="2" placeholder="e.g. Send course shortlist"></textarea></label>
+   <label class="field full">Last outcome / note<textarea id="note" rows="2" placeholder="Avoid sensitive personal details in the demo"></textarea></label>
+  </div>
+  <div class="modalfoot"><button class="btn" type="button" id="cancelBtn">Cancel</button><button class="btn primary" type="submit">Save enquiry</button></div>
+ </form>
+</dialog>
+<script>
+const KEY='leadpilot_demo_v1';
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const offset=n=>{const d=new Date();d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const seed=[
+{id:1,name:'Demo Student A',course:"UK Master's",source:'Website',stage:'Contacted',nextDate:today(),owner:'Counsellor 1',nextAction:'Send course shortlist',note:'Fictional demo record'},
+{id:2,name:'Demo Student B',course:'IELTS Coaching',source:'Walk-in',stage:'New',nextDate:today(),owner:'Counsellor 1',nextAction:'Call to understand requirement',note:'Fictional demo record'},
+{id:3,name:'Demo Student C',course:'Canada Diploma',source:'Instagram',stage:'Follow-up',nextDate:offset(-2),owner:'Counsellor 2',nextAction:'Send polite follow-up',note:'Fictional demo record'},
+{id:4,name:'Demo Student D',course:"Australia Bachelor's",source:'Referral',stage:'Counselling Booked',nextDate:offset(1),owner:'Counsellor 2',nextAction:'Confirm appointment',note:'Fictional demo record'},
+{id:5,name:'Demo Student E',course:"USA Master's",source:'Website',stage:'Unresponsive',nextDate:offset(-1),owner:'Counsellor 1',nextAction:'Review whether one final follow-up is appropriate',note:'Fictional demo record'}
+];
+let leads=load(); let dueOnly=false;
+function load(){try{const d=localStorage.getItem(KEY);return d?JSON.parse(d):seed.map(x=>({...x}))}catch(e){return seed.map(x=>({...x}))}}
+function save(){localStorage.setItem(KEY,JSON.stringify(leads))}
+function closed(l){return ['Converted','Lost'].includes(l.stage)}
+function status(l){if(closed(l))return ['Closed','closed'];if(!l.nextDate)return ['Set date',''];if(l.nextDate<today())return ['Overdue','overdue'];if(l.nextDate===today())return ['Due today','today'];return ['Upcoming','upcoming']}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(){
+ const active=leads.filter(l=>!closed(l));const overdue=active.filter(l=>status(l)[0]==='Overdue').length;const due=active.filter(l=>status(l)[0]==='Due today').length;
+ document.getElementById('metrics').innerHTML=[
+ ['Total enquiries',leads.length,'All records in this demo'],['Active enquiries',active.length,'Not marked converted or lost'],['Overdue follow-ups',overdue,'Needs review'],['Due today',due,'Plan these next']
+ ].map(m=>`<div class="card"><div class="muted">${m[0]}</div><div class="metric">${m[1]}</div><div class="muted">${m[2]}</div></div>`).join('');
+ const q=document.getElementById('search').value.toLowerCase(),stage=document.getElementById('stageFilter').value;
+ const filtered=leads.filter(l=>(!q||[l.name,l.course,l.nextAction,l.owner,l.note].join(' ').toLowerCase().includes(q))&&(!stage||l.stage===stage)&&(!dueOnly||status(l)[0]==='Due today'||status(l)[0]==='Overdue'));
+ document.getElementById('rows').innerHTML=filtered.map(l=>{const s=status(l);return `<tr><td><strong>${esc(l.name)}</strong><div class="muted">${esc(l.course||'Interest not specified')} · ${esc(l.source||'Other')}</div><div class="muted">${esc(l.owner||'Unassigned')}</div></td><td>${esc(l.stage)}</td><td>${esc(l.nextDate||'Not set')}</td><td>${esc(l.nextAction||'Add next action')}</td><td><span class="pill ${s[1]}">${s[0]}</span></td><td><div class="actions"><button class="btn small" onclick="editLead(${l.id})">Edit</button><button class="btn small" onclick="markDone(${l.id})">Close</button></div></td></tr>`}).join('');
+ document.getElementById('empty').hidden=filtered.length>0;
+}
+const dlg=document.getElementById('leadDialog');
+function openForm(l){document.getElementById('leadForm').reset();document.getElementById('leadId').value=l?.id||'';document.getElementById('modalTitle').textContent=l?'Edit enquiry':'Add enquiry';document.getElementById('name').value=l?.name||'';document.getElementById('course').value=l?.course||'';document.getElementById('source').value=l?.source||'Website';document.getElementById('stage').value=l?.stage||'New';document.getElementById('nextDate').value=l?.nextDate||today();document.getElementById('owner').value=l?.owner||'';document.getElementById('nextAction').value=l?.nextAction||'';document.getElementById('note').value=l?.note||'';dlg.showModal()}
+window.editLead=id=>openForm(leads.find(l=>l.id===id));
+window.markDone=id=>{const l=leads.find(x=>x.id===id);if(l&&confirm(`Mark ${l.name} as Lost/closed? Choose Edit if you need to mark them Converted.`)){l.stage='Lost';save();render()}};
+document.getElementById('addBtn').onclick=()=>openForm();document.getElementById('closeModal').onclick=()=>dlg.close();document.getElementById('cancelBtn').onclick=()=>dlg.close();
+document.getElementById('leadForm').onsubmit=e=>{e.preventDefault();const id=Number(document.getElementById('leadId').value)||Date.now();const old=leads.find(l=>l.id===id);const l={id,name:document.getElementById('name').value.trim(),course:document.getElementById('course').value.trim(),source:document.getElementById('source').value,stage:document.getElementById('stage').value,nextDate:document.getElementById('nextDate').value,owner:document.getElementById('owner').value.trim(),nextAction:document.getElementById('nextAction').value.trim(),note:document.getElementById('note').value.trim()};if(old)leads=leads.map(x=>x.id===id?l:x);else leads.unshift(l);save();dlg.close();render()};
+document.getElementById('search').oninput=render;document.getElementById('stageFilter').onchange=render;
+document.getElementById('todayBtn').onclick=()=>{dueOnly=true;render()};document.getElementById('allBtn').onclick=()=>{dueOnly=false;render()};
+document.getElementById('resetDemo').onclick=()=>{if(confirm('Reset all local changes and restore fictional demo records?')){leads=seed.map(x=>({...x}));save();dueOnly=false;document.getElementById('search').value='';document.getElementById('stageFilter').value='';render()}};
+document.getElementById('exportBtn').onclick=()=>{const cols=['id','name','course','source','stage','nextDate','owner','nextAction','note'];const csv=[cols.join(','),...leads.map(l=>cols.map(c=>'"'+String(l[c]??'').replace(/"/g,'""')+'"').join(','))].join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='leadpilot-enquiries.csv';a.click();URL.revokeObjectURL(a.href)};
+render();
+</script>
+</body>
+</html>
