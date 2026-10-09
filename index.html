@@ -102,7 +102,7 @@ document.getElementById('leadForm').onsubmit=e=>{e.preventDefault();const id=Num
 document.getElementById('search').oninput=render;document.getElementById('stageFilter').onchange=render;
 document.getElementById('todayBtn').onclick=()=>{dueOnly=true;render()};document.getElementById('allBtn').onclick=()=>{dueOnly=false;render()};
 document.getElementById('resetDemo').onclick=()=>{if(confirm('Reset all local changes and restore fictional demo records?')){leads=seed.map(x=>({...x}));save();dueOnly=false;document.getElementById('search').value='';document.getElementById('stageFilter').value='';render()}};
-document.getElementById('exportBtn').onclick=()=>{const cols=['id','name','course','source','stage','nextDate','owner','nextAction','note'];const csv=[cols.join(','),...leads.map(l=>cols.map(c=>'"'+String(l[c]??'').replace(/"/g,'""')+'"').join(','))].join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='leadpilot-enquiries.csv';a.click();URL.revokeObjectURL(a.href)};
+document.getElementById('exportBtn').onclick=()=>{const cols=['id','name','course','source','stage','nextDate','nextAction','owner','note'];const csv=[cols.join(','),...leads.map(l=>cols.map(k=>'"'+String(l[k]??'').replace(/"/g,'""')+'"').join(','))].join('\r\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='leadpilot-enquiries.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 render();
 </script>
 </body>
